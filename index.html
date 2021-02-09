@@ -1,0 +1,79 @@
+<!doctype html>
+<html class="no-js" lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Vue JS Playground</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+</head>
+<body>
+
+<div id="app">
+    <div class="container">
+        <div class="text-center">
+            <h1>Bienvenue sur ma super application Meteo.</h1>
+            <p>J'espére que vous allez bien vous amuser. C'est super vous allez pouvoir savoir en temps réel le temps qui
+                faut chez
+                vous et c'est super chouette ! </p>
+    
+            <div class="form-group mb-5">
+                <label for="ville">Entrez le nom d'une ville</label>
+                <input v-model="requete" id="ville" type="text" class="form-control">
+            <div v-if="display">
+                 <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  <h5 class="card-title">{{requete}}</h5>
+                  <p class="card-text">
+                      Temperature : {{temps.main.temp}}  <br>
+                      Temps : {{temps.weather[0].description}}
+                  </p>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<!-- DV : ajout ici -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js" integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww==" crossorigin="anonymous"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+
+            requete: "",
+            token: 'e662fbf6ee7e878b06720bf1d89404b2',
+            url_search: "http://api.openweathermap.org/data/2.5/weather?",
+            temps: {},
+            display: false
+        },
+        watch: {
+            requete: _.debounce(
+                function(newVal){
+                     this.fetchData()}, 1000)  
+            
+        },
+        methods: {
+            fetchData: function () {
+                axios
+                    .get(this.url_search + "q=" + this.requete + "&units=metric&APPID=" +
+                        this.token + "&lang=fr")
+                    .then(response => {
+                        console.log(response.data)
+                        this.temps = response.data
+                        this.display = true
+                        // console.log(temps)
+                    })
+            }
+        
+        }
+    })
+
+</script>
+</body>
+</html>
